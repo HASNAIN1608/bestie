@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Friend Hira</title>
+<style>
+/* --- CSS Styles (Unchanged) --- */
+* { box-sizing: border-box; }
+
+body{
+    margin:0;
+    height:100vh;
+    overflow:hidden;
+    background:#0a0a15;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* Hearts animation */
+.heart{
+    position:absolute;
+    bottom:-50px;
+    font-size:30px;
+    animation:floatUp 6s linear infinite;
+}
+
+@keyframes floatUp{
+    0%{transform:translateY(0) scale(1); opacity:0;}
+    20%{opacity:1;}
+    100%{transform:translateY(-120vh) scale(1.5); opacity:0;}
+}
+
+/* Button style */
+.btn{
+    padding:22px 38px;
+    background:linear-gradient(45deg,#ff00ff,#00e5ff);
+    border-radius:45px;
+    font-size:28px;
+    cursor:pointer;
+    text-transform:uppercase;
+    font-weight:700;
+    box-shadow:0 0 40px rgba(255,0,255,.7);
+    transition:.3s;
+}
+.btn:hover{transform:scale(1.1);}
+
+/* Popup styles */
+#popup{
+    position:fixed;
+    inset:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.8);
+}
+
+.card{
+    background:#111;
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 0 45px #00e5ff;
+    animation:pop .4s;
+    max-width: 90%; 
+}
+
+@keyframes pop{
+    0%{transform:scale(0);}
+    80%{transform:scale(1.1);}
+    100%{transform:scale(1);}
+}
+
+.close {
+    margin-top:20px; 
+    padding:10px 20px; 
+    background:#222; 
+    border-radius:10px; 
+    cursor:pointer;
+    transition: background .3s;
+}
+.close:hover { background: #333; }
+
+video {
+    width:100%;
+    max-width:360px;
+    border-radius:15px;
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" src="terayaar.mp3" loop></audio>
+
+<div class="btn" id="show">Click Me</div>
+
+<div id="popup">
+    <div class="card">
+        <video id="myVideo" width="360" height="240" controls>
+            <source src="videos/hiramp3.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="close" id="close">Close</div>
+    </div>
+</div>
+
+<script>
+const music = document.getElementById("bgMusic"); 
+const btn = document.getElementById("show");
+const popup = document.getElementById("popup");
+const closeBtn = document.getElementById("close");
+const video = document.getElementById("myVideo");
+
+// Unlock audio on first user interaction
+document.body.addEventListener("click", () => { 
+    music.play().catch(err => console.log("Audio play error:", err));
+}, {once:true});
+
+// Fade-in music
+function fadeIn(){
+    music.volume = 0;
+    music.play().catch(err => console.log("Audio play error:", err));
+    let v = 0;
+    const fade = setInterval(()=>{
+        if(v < 1){
+            v = Math.min(1, v + 0.05);
+            music.volume = v;
+        } else clearInterval(fade);
+    }, 200);
+}
+
+// Fade-out music
+function fadeOut(){
+    let v = music.volume;
+    const fade = setInterval(()=>{
+        if(v > 0){
+            v = Math.max(0, v - 0.05);
+            music.volume = v;
+        } else{
+            music.pause();
+            clearInterval(fade);
+        }
+    }, 200);
+}
+
+
+// OPEN popup and play video
+btn.addEventListener("click", () => {
+    popup.style.display = "flex";
+    video.play().catch(err => console.log("Video play error:", err));
+    fadeOut(); // Music fade out
+});
+
+// CLOSE popup and pause video
+closeBtn.addEventListener("click", () => {
+    popup.style.display = "none";
+    video.pause();
+    video.currentTime = 0;
+    fadeIn(); // Music fade in
+});
+
+// Close by clicking outside the card
+popup.addEventListener("click", (e) => {
+    if(e.target === popup){
+        popup.style.display = "none";
+        video.pause();
+        video.currentTime = 0;
+        fadeIn(); // Music fade in
+    }
+});
+
+// Hearts animation
+function makeHeart(){
+    const d = document.createElement("div");
+    d.className = "heart";
+    d.textContent = "💛";
+    d.style.left = Math.random()*100 + "vw";
+    d.style.fontSize = (20 + Math.random()*40) + "px";
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 6000);
+}
+setInterval(makeHeart, 700);
+</script>
+
+</body>
+</html>
